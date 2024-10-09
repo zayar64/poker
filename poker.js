@@ -197,17 +197,14 @@ function getHandProperty(hand) {
 
 // Visualization
 
-var deck = copyDeck(DECK);
-
-var emptyHand = [];
-var hand = [];
-var table_hand = document.querySelector(".table .hand");
-
 const hold_color = "lightgreen";
 const default_color = "white";
 const cards_in_hands = 5;
 const card_image_directory = "./card_images";
 const default_card_image = card_image_directory + "/back.png";
+
+var table_hand = document.querySelector(".table .hand");
+var deck, emptyHand, hand;
 
 function getCardImage(card) {
     return card.rank
@@ -215,11 +212,6 @@ function getCardImage(card) {
               card.suit
           }s.png`
         : default_card_image;
-}
-
-for (let i = 0; i < cards_in_hands; i++) {
-    emptyHand.push({});
-    hand.push(drawCard(deck));
 }
 
 function showHand(hand) {
@@ -235,17 +227,9 @@ function showHand(hand) {
     });
 }
 
-showHand(emptyHand);
-setTimeout(() => {
-    showHand(hand);
-}, 500);
-
 function swapCards(e) {
-    document.querySelector("#hand-name").innerHTML = "";
-
     document.querySelectorAll(".card button").forEach((btn, i) => {
         let card_img = btn.parentNode.children[0];
-
         if (btn.style.backgroundColor != hold_color) {
             card_img.src = "./card_images/back.png";
 
@@ -269,8 +253,28 @@ function swapCards(e) {
             new_hand.name = getPairName(hand);
         }
         document.querySelector("#hand-name").innerHTML =
-            new_hand.rank <= HAND_RANKINGS.length
-                ? new_hand.name
-                : "You Lost!";
+            new_hand.rank <= HAND_RANKINGS.length ? new_hand.name : "You Lost!";
     }, 500);
 }
+
+function playPoker() {
+    deck = copyDeck(DECK);
+    emptyHand = [];
+    hand = [];
+
+    for (let i = 0; i < cards_in_hands; i++) {
+        emptyHand.push({});
+        hand.push(drawCard(deck));
+    }
+
+    document.querySelector("#hand-name").innerHTML = "";
+    document.querySelector("#swap-btn").disabled = false;
+    document.querySelector("#reloader").style.display = "none";
+
+    showHand(emptyHand);
+    setTimeout(() => {
+        showHand(hand);
+    }, 500);
+}
+
+playPoker();
