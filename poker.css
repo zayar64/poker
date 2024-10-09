@@ -1,0 +1,35 @@
+.table div {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.table .hand {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.table .hand .card {
+    display: flex;
+    flex-direction: column;
+    margin: 1%;
+}
+
+.card button {
+    margin-top: 10%;
+    border-radius: 3px;
+}
+
+img {
+    border: 1px solid black;
+}
+
+#reloader {
+    display: none;
+}
+
+#reloader:active,
+#swap-btn:active {
+    background-color: red;
+}
