@@ -9,6 +9,7 @@ RANK_NAMES[11] = "JACK";
 RANK_NAMES[12] = "QUEEN";
 RANK_NAMES[13] = "KING";
 RANK_NAMES[14] = "ACE";
+RANK_NAMES[1] = "ACE";
 
 const SUITS = ["SPADE", "CLUB", "HEART", "DIAMOND"];
 
@@ -38,16 +39,12 @@ function drawCard(deck) {
     return shuffleDeck(deck).pop();
 }
 
-function holdCard(card) {
-    if (card.style.backgroundColor != hold_color) {
-        card.style.backgroundColor = hold_color;
-    } else {
-        card.style.backgroundColor = default_color;
-    }
-}
-
 function sortRank(hand) {
     return hand.map(card => card.rank).sort((a, b) => a - b);
+}
+
+function sortHand(hand) {
+    return hand.map(card => card).sort((a, b) => a.rank - b.rank);
 }
 
 function getRankFrequencies(hand) {
@@ -203,8 +200,10 @@ const cards_in_hands = 5;
 const card_image_directory = "./card_images";
 const default_card_image = card_image_directory + "/back.png";
 
-var table_hand = document.querySelector(".table .hand");
 var deck, emptyHand, hand;
+
+var table_hand = document.querySelector(".table .hand");
+var result = document.querySelector(".result");
 
 function getCardImage(card) {
     return card.rank
@@ -225,6 +224,45 @@ function showHand(hand) {
         `;
         table_hand.appendChild(div);
     });
+}
+
+function holdCard(card) {
+    if (card.style.backgroundColor != hold_color) {
+        card.style.backgroundColor = hold_color;
+    } else {
+        card.style.backgroundColor = default_color;
+    }
+}
+
+function showResult(hand) {
+    sortedHand = sortHand(hand);
+
+    let handNameDiv = document.createElement("div");
+    let newHandProperty = getHandProperty(hand);
+    let rankDiv = document.createElement("div");
+
+    if (newHandProperty.name?.includes("PAIR OF")) {
+        newHandProperty.name = getPairName(hand);
+    }
+
+    let hand_name =
+        newHandProperty.rank <= HAND_RANKINGS.length
+            ? newHandProperty.name
+            : "You Lost!";
+    handNameDiv.innerHTML = `<span>${hand_name}</span>`;
+
+    sortedHand.forEach(card => {
+        let span = document.createElement("span");
+        span.className = "rank";
+        let rank = RANK_NAMES[card.rank];
+        rank = rank === "10" ? rank : rank[0];
+        span.innerHTML = rank;
+        rankDiv.appendChild(span);
+    });
+
+    result.appendChild(handNameDiv);
+    result.appendChild(rankDiv);
+    result.style.border = "1px solid black";
 }
 
 function swapCards(e) {
@@ -248,12 +286,7 @@ function swapCards(e) {
     document.querySelector("#reloader").style.display = "flex";
 
     setTimeout(() => {
-        let new_hand = getHandProperty(hand);
-        if (new_hand.name?.includes("PAIR OF")) {
-            new_hand.name = getPairName(hand);
-        }
-        document.querySelector("#hand-name").innerHTML =
-            new_hand.rank <= HAND_RANKINGS.length ? new_hand.name : "You Lost!";
+        showResult(hand);
     }, 500);
 }
 
@@ -267,7 +300,8 @@ function playPoker() {
         hand.push(drawCard(deck));
     }
 
-    document.querySelector("#hand-name").innerHTML = "";
+    result.innerHTML = "";
+    result.style.border = "";
     document.querySelector("#swap-btn").disabled = false;
     document.querySelector("#reloader").style.display = "none";
 
